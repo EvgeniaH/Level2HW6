@@ -1,27 +1,16 @@
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-
-public class Server {
-
+public class Client {
 
     public static void main(String[] args) {
-        Server server = new Server();
-    }
 
-    public Server() {
-
-        ServerSocket server = null;
         Socket socket = null;
 
         try {
-            server = new ServerSocket(2433);
-            System.out.println("Server is working...");
-            socket = server.accept();
-            System.out.println("New Client");
+            socket = new Socket("localhost", 2433);
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Scanner sc = new Scanner(System.in);
@@ -30,27 +19,22 @@ public class Server {
                 @Override
                 public void run() {
                     while (true) {
-                        System.out.println("Server, write you message");
-                        String msg = sc.nextLine();
-                        System.out.println("The message was send");
-                        out.println(msg);
+                        String msg = in.nextLine();
+                        System.out.println("Server: " + msg);
                     }
                 }
             }).start();
 
             while (true) {
-                String msg = in.nextLine();
-                if (msg.equals("/end")) break;
-                System.out.println("Client: " + msg);
-
+                System.out.println("Write you message...");
+                String msg = sc.nextLine();
+                out.println(msg);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 socket.close();
-                server.close();
-                System.out.println("Server closed");
             } catch (IOException e) {
                 e.printStackTrace();
             }
